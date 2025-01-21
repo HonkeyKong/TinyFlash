@@ -11,12 +11,6 @@ void DMACopy(void* dest, const void* src, uint32_t size) {
 
 // The lengths I go to in order to shave off a few bytes...
 
-uint32_t stringLength(const char* str) {
-    uint32_t length = 0;
-    while (*str++) length++;
-    return length;
-}
-
 void ClearText() {
     __asm__ volatile (
         "mov r0, %0\n"          // r0 = MAP_BASE_3 (start address)
@@ -58,44 +52,12 @@ void RenderLine(const char *text, uint8_t line) {
     RenderText(text, 0, line); // Render at x = 0, y = line
 }
 
-const char* IntToASCII(int value) {
-    static char buffer[12]; // Max 10 digits + sign + null terminator
-    int i = 10;             // Start at the end of the buffer
-    buffer[11] = '\0';
-
-    if (value == 0) return "0";
-
-    while (value && i) {
-        buffer[--i] = '0' + (value % 10);
-        value /= 10;
-    }
-
-    return &buffer[i];
-}
-
 void RenderHex(unsigned int value, uint8_t x, uint8_t y) {
     char hexChars[] = "0123456789ABCDEF";
     for (int i = 7; i >= 0; --i) { // 8 hex digits for a 32-bit address
         char c = hexChars[(value >> (i * 4)) & 0xF];
         RenderText(&c, x++, y);
     }
-}
-
-// Returns a pointer to a static buffer containing the hex representation of `value`.
-// Each call overwrites the same static buffer.
-const char* HexString(uint16_t value)
-{
-    static char hexBuf[5]; // 4 hex digits + null terminator
-
-    for (int i = 3; i >= 0; i--)
-    {
-        int nib = value & 0xF;
-        hexBuf[i] = (nib < 10) ? (char)('0' + nib) : (char)('A' + (nib - 10));
-        value >>= 4;
-    }
-
-    hexBuf[4] = '\0'; // Null-terminate
-    return hexBuf;
 }
 
 void InitText() {
@@ -108,4 +70,13 @@ void InitText() {
     
     // Clear the screen
     ClearText();
+}
+
+#define REG_DISPSTAT (*(volatile uint16_t*)0x04000004)
+
+void WaitVBlank() {
+    // Wait until VBlank ends
+    while (REG_DISPSTAT & 1);
+    // Wait until VBlank starts
+    while (!(REG_DISPSTAT & 1));
 }

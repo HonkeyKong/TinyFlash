@@ -10,14 +10,16 @@ project(TinyFlash C ASM)
 set( SOURCE_FILES
     src/main.c
     src/text.c
-    src/flash.c
     res/font.s
+    src/flash.c
+    src/text_asm.s
     res/rom.s )
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
 add_executable( tinyflash ${SOURCE_FILES} )
+target_compile_options(tinyflash PRIVATE -Os)
 
 # Define the ROM binary and generated files
 set(ROM_BINARY "${CMAKE_SOURCE_DIR}/res/rom.gba")

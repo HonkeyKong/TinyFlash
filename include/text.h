@@ -27,6 +27,8 @@
 void InitText();
 void ClearText();
 void CheckLines();
+void WaitVBlank();
+// void SyncTilemap();
 const char* IntToASCII(int value);
 const char* HexString(uint16_t value);
 uint32_t stringLength(const char *str);

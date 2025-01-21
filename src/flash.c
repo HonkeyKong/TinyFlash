@@ -8,6 +8,7 @@ bool bitSwapped = false;
 
 uint8_t readByte(int addr) {
     uint8_t data = *((uint16_t*)FLASH_BASE + (addr / 2));
+    // uint8_t data = *((uint16_t*)FLASH_BASE + (addr >> 1));
     if (bitSwapped) {
         data = (data & 0xFC) | ((data & 1) << 1) | ((data & 2) >> 1);
     }
@@ -43,15 +44,18 @@ bool QueryCFI() {
 
     for (uint8_t region = 0; region < regionCount; ++region) {
         uint32_t baseOffset = 0x5A + region * 8;
+        // uint32_t baseOffset = 0x5A + region << 3;
         uint16_t sectorCount = readByte(baseOffset) | (readByte(baseOffset + 2) << 8);
         uint16_t sectorSize = readByte(baseOffset + 4) | (readByte(baseOffset + 6) << 8);
 
         if (region == 0) {
             region0Sectors = sectorCount + 1;
             region0Size = sectorSize * 256; // 8KB sectors for region 0
+            // region0Size = sectorSize << 8; // 8KB sectors for region 0
         } else {
             region1Sectors = sectorCount + 1;
             region1Size = sectorSize * 256; // Larger sectors for region 1
+            // region1Size = sectorSize << 8; // Larger sectors for region 1
         }
 
         RENDER_LINE_WITH_VALUE("REGION ", region);

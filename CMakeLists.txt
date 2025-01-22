@@ -1,5 +1,5 @@
 # TinyFlash
-# Author: Ryan Souders (honkeykong@honkeykong.org)
+# Author: Ryan Souders
 cmake_minimum_required(VERSION 3.13)
 
 set(DEVKITPRO /opt/devkitpro)

@@ -68,13 +68,18 @@ bool QueryCFI() {
     return true;
 }
 
+uint16_t mfrID = 0;
+uint16_t devID = 0;
+
 uint16_t DetectChipType() {
     _FLASH_WRITE(0xAAA, 0xA9); // Enter auto-select mode
     _FLASH_WRITE(0x555, 0x56);
     _FLASH_WRITE(0xAAA, 0x90);
 
     uint16_t manufacturerID = *(volatile uint16_t*)(FLASH_BASE + 0x00);
+    mfrID = manufacturerID;
     uint16_t deviceID = *(volatile uint16_t*)(FLASH_BASE + 0x02);
+    devID = deviceID;
 
     _FLASH_WRITE(0x0000, 0xF0); // Exit auto-select mode
 
